@@ -69,7 +69,7 @@ export default function AdminShell({ admin, children }) {
         >
           <div className="flex flex-col leading-tight">
             <span className="font-medium text-base" style={{ color: INK }}>
-              J
+              Rameeyam Designer
             </span>
             <span
               className="text-[10px] tracking-widest uppercase mt-0.5"
@@ -157,7 +157,7 @@ export default function AdminShell({ admin, children }) {
             <Menu size={22} />
           </button>
           <span className="font-medium text-base" style={{ color: INK }}>
-            JR Fashion Admin
+            Rameeyam Designer Admin
           </span>
         </header>
 
