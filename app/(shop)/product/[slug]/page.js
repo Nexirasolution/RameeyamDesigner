@@ -356,11 +356,11 @@ export default function ProductPage() {
               </span>
             )}
 
-            <div className="flex items-center gap-1.5 mt-1.5 sm:mt-2.5 text-sm" style={{ color: GREY }}>
+            {/* <div className="flex items-center gap-1.5 mt-1.5 sm:mt-2.5 text-sm" style={{ color: GREY }}>
               <Star size={13} strokeWidth={1.5} style={{ fill: GOLD, color: GOLD }} />
               <span style={{ color: BLACK }}>{product.rating?.toFixed?.(1) ?? product.rating}</span>
               <span>· {product.reviewCount} reviews</span>
-            </div>
+            </div> */}
 
             {/* Price now reflects the base variant price PLUS whichever
                 pant/shawl add-ons are currently selected, so it updates
@@ -490,7 +490,7 @@ export default function ProductPage() {
         </div>
 
         {/* Reviews */}
-        {reviews?.length > 0 && (
+        {/* {reviews?.length > 0 && (
           <div className="mt-20 sm:mt-28">
             <h2 className="text-[11px] font-medium uppercase tracking-[0.18em] mb-8 pb-3" style={{ color: BLACK, borderBottom: `1px solid ${GOLD}` }}>
               Customer Reviews
@@ -508,10 +508,10 @@ export default function ProductPage() {
 
                   <p className={`${display.className} text-sm leading-relaxed`} style={{ color: BLACK }}>
                     {r.comment}
-                  </p>
+                  </p> */}
 
                   {/* Review images — only rendered when present */}
-                  {r.images?.length > 0 && (
+                  {/* {r.images?.length > 0 && (
                     <div className="flex gap-2 mt-3 flex-wrap">
                       {r.images.map((img, i) => (
                         <button
@@ -531,7 +531,7 @@ export default function ProductPage() {
               ))}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Related */}
         {related?.length > 0 && (
