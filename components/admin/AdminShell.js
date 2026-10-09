@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  LayoutDashboard, Package, ListTree, ShoppingCart, Boxes, Image as ImageIcon,
+  LayoutDashboard, Package, ListTree, ShoppingCart, Boxes, Image as ImageIcon,FileText,
   Clapperboard, Star, Ticket, Layers, FileBarChart, Settings as SettingsIcon, Menu, X, LogOut
 } from 'lucide-react';
 
@@ -22,6 +22,7 @@ const NAV = [
   { href: '/admin/categories', label: 'Categories',    icon: ListTree },
   { href: '/admin/orders',     label: 'Orders',        icon: ShoppingCart },
   { href: '/admin/inventory',  label: 'Inventory',     icon: Boxes },
+  { href: '/admin/invoices', label: 'Invoices', icon: FileText },
   // { href: '/admin/combos',     label: 'Combo Offers',  icon: Layers },
   { href: '/admin/banners',    label: 'Banners',       icon: ImageIcon },
   // { href: '/admin/reels',      label: 'Shop by Reels', icon: Clapperboard },
