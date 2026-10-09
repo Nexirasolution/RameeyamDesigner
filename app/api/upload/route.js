@@ -1,51 +1,51 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 
-export const runtime = 'nodejs'; // the Cloudinary SDK needs Node APIs
+export const runtime = 'nodejs'; // the AWS SDK needs Node APIs
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true,
+const r2 = new S3Client({
+  region: 'auto',
+  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+  },
 });
 
 export async function POST(req) {
   const formData = await req.formData();
   const file = formData.get('file');
-  const folder = formData.get('folder') || 'uploads';
+  const rawFolder = formData.get('folder') || 'uploads';
 
   if (!file) return NextResponse.json({ error: 'No file' }, { status: 400 });
 
+  // Sanitize the folder so callers can't escape with ../ or odd characters
+  const folder = String(rawFolder).replace(/[^a-zA-Z0-9_\-/]/g, '').replace(/\.{2,}/g, '').replace(/^\/+|\/+$/g, '') || 'uploads';
+
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  // Unique public_id. Images/videos get their extension from the delivery URL,
-  // but raw files (pdf, zip, etc.) need the extension baked into the public_id.
-  const ext = file.name?.includes('.') ? file.name.split('.').pop() : '';
-  const isMedia = file.type?.startsWith('image/') || file.type?.startsWith('video/');
-  const publicId = isMedia || !ext ? randomUUID() : `${randomUUID()}.${ext}`;
+  // R2 is plain object storage, so the extension always lives in the key
+  const rawExt = file.name?.includes('.') ? file.name.split('.').pop() : '';
+  const ext = rawExt.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  const key = `${folder}/${randomUUID()}${ext ? `.${ext}` : ''}`;
 
   try {
-    const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            folder,
-            public_id: publicId,
-            resource_type: 'auto',
-          },
-          (error, res) => (error ? reject(error) : resolve(res))
-        )
-        .end(buffer);
-    });
+    await r2.send(
+      new PutObjectCommand({
+        Bucket: process.env.R2_BUCKET_NAME,
+        Key: key,
+        Body: buffer,
+        ContentType: file.type || 'application/octet-stream',
+      })
+    );
 
     return NextResponse.json({
-      url: result.secure_url,
-      publicId: result.public_id,
+      url: `${process.env.R2_PUBLIC_URL.replace(/\/$/, '')}/${key}`,
+      publicId: key, // kept so existing clients reading `publicId` still work
     });
   } catch (err) {
-    console.error('Cloudinary upload failed:', err);
+    console.error('R2 upload failed:', err);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
   }
 }
