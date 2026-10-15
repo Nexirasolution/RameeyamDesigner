@@ -1,23 +1,26 @@
-export const dynamic = 'force-dynamic';
+// Cached page: rebuilt at most once every 5 minutes and served from the CDN
+// in between, so most visits cost zero function time and zero DB queries.
+// For instant updates, call revalidatePath('/') in your admin API routes.
+export const revalidate = 300;
+
 import { dbConnect } from '@/lib/mongodb';
 import Banner from '@/models/Banner';
 import Product from '@/models/Product';
 import Review from '@/models/Review';
-import Reel from '@/models/Reel';
 import Combo from '@/models/Combo';
 import Category from '@/models/Category';
 import BannerCarousel from '@/components/BannerCarousel';
 import ProductCard from '@/components/ProductCard';
 import ReviewSection from '@/components/ReviewSection';
-import ReelsSection from '@/components/ReelsSection';
+// import Reel from '@/models/Reel';
+// import ReelsSection from '@/components/ReelsSection';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { formatINR } from '@/lib/utils';
 import { ArrowRight, Tag } from 'lucide-react';
 
 // Design tokens — shared black / white / gold theme
-const INK = '#000000';
+const INK = '#004225';
 const INK_SOFT = '#6B6B6B';
 const GOLD = '#C9A227';
 const GOLD_WASH = '#F6EFD9';
@@ -35,27 +38,40 @@ const FEATURED_LIMIT = 6;
 
 async function getData() {
   await dbConnect();
-  const [banners, bestSellers, topSellers, activeSellers, reviews, reels, combos, categories] = await Promise.all([
+
+  // Only the queries this page actually renders.
+  // (bestSellers, topSellers and reels were fetched before but never used.)
+  const [banners, activeSellers, reviews, combos, categories] = await Promise.all([
     Banner.find({ isActive: true }).sort({ sortOrder: 1 }).lean(),
-    Product.find({ isActive: true, isBestSeller: true }).limit(12).lean(),
-    Product.find({ isActive: true, isTopSeller: true }).limit(12).lean(),
-    Product.find({ isActive: true, isActiveSeller: true }).sort({ createdAt: -1 }).limit(12).lean(),
-    Review.find({ isApproved: true, isFeatured: true }).populate('product', 'name').limit(10).lean(),
-    Reel.find({ isActive: true }).sort({ sortOrder: 1 }).populate('product', 'name slug').limit(10).lean(),
+    Product.find({ isActive: true, isActiveSeller: true })
+      .sort({ createdAt: -1 })
+      .limit(FEATURED_LIMIT)
+      .lean(),
+    Review.find({ isApproved: true, isFeatured: true })
+      .populate('product', 'name')
+      .limit(10)
+      .lean(),
     Combo.find({ isActive: true }).limit(6).lean(),
     // Only main categories here — subcategories are excluded from the
     // homepage "Shop by Category" grid, which only ever links straight
     // into a single category page (no drill-down UI on that page anymore).
     Category.find({ isActive: true, parent: null }).limit(10).lean(),
+
+    // When you bring the reels section back, add this to the list above:
+    // Reel.find({ isActive: true }).sort({ sortOrder: 1 }).populate('product', 'name slug').limit(10).lean(),
   ]);
-  return { banners, bestSellers, topSellers, activeSellers, reviews, reels, combos, categories };
+
+  // Serialize once (ObjectIds and Dates become plain values for client components)
+  return JSON.parse(
+    JSON.stringify({ banners, activeSellers, reviews, combos, categories })
+  );
 }
 
 export default async function HomePage() {
-  const { banners, bestSellers, topSellers, activeSellers, reviews, reels, combos, categories } = await getData();
-  const plainCombos = JSON.parse(JSON.stringify(combos));
-  const plainCategories = JSON.parse(JSON.stringify(categories));
-  const plainNewArrivals = JSON.parse(JSON.stringify(activeSellers)).slice(0, FEATURED_LIMIT);
+  const { banners, activeSellers, reviews, combos, categories } = await getData();
+  const plainCombos = combos;
+  const plainCategories = categories;
+  const plainNewArrivals = activeSellers;
 
   return (
     <div className="overflow-x-hidden bg-white">
@@ -101,7 +117,7 @@ export default async function HomePage() {
       </section> */}
 
       {/* Banner */}
-      <BannerCarousel banners={JSON.parse(JSON.stringify(banners))} />
+      <BannerCarousel banners={banners} />
 
       {/* Shop by Category */}
       {plainCategories?.length > 0 && (
@@ -128,6 +144,10 @@ export default async function HomePage() {
                     <img
                       src={c.image}
                       alt={c.name}
+                      width={96}
+                      height={96}
+                      loading="lazy"
+                      decoding="async"
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   ) : (
@@ -184,7 +204,7 @@ export default async function HomePage() {
         {/* Colors live in classes (not inline style) so the hover state can override them */}
         <Link
           href="/products"
-          className="inline-block mt-10 px-8 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors bg-black text-[#C9A227] border border-[#C9A227] hover:bg-[#C9A227] hover:text-black"
+          className="inline-block mt-10 px-8 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors bg-[#004225] text-[#C9A227] border border-[#C9A227] hover:bg-[#C9A227] hover:text-black"
           style={{ fontFamily: FONT_SANS }}
         >
           Shop the collection
@@ -250,6 +270,8 @@ export default async function HomePage() {
                         <img
                           src={cover}
                           alt={c.name}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
@@ -318,10 +340,10 @@ export default async function HomePage() {
       )}
 
       {/* Reviews */}
-      <ReviewSection reviews={JSON.parse(JSON.stringify(reviews))} />
+      <ReviewSection reviews={reviews} />
 
       {/* Reels */}
-      {/* <ReelsSection reels={JSON.parse(JSON.stringify(reels))} /> */}
+      {/* <ReelsSection reels={reels} /> */}
 
     </div>
   );

@@ -3,22 +3,59 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import R2Image from '@/components/R2Image';
 
 // Design tokens — shared black/white/gold system
 const INK = '#000000';
 const GOLD = '#C9A227';
 const PAPER = '#FFFFFF';
 
+const AUTOPLAY_MS = 4500;
+
 export default function BannerCarousel({ banners }) {
+  const count = banners?.length || 0;
   const [index, setIndex] = useState(0);
 
-  useEffect(() => {
-    if (!banners?.length) return;
-    const t = setInterval(() => setIndex((i) => (i + 1) % banners.length), 4500);
-    return () => clearInterval(t);
-  }, [banners]);
+  // Only slides that have been shown (or are next in line) are put in the page.
+  // Before, every banner image downloaded up front, competing with the first
+  // one that the visitor actually sees.
+  const [visited, setVisited] = useState(() => new Set([0]));
 
-  if (!banners?.length) return null;
+  useEffect(() => {
+    if (count < 2) return;
+    setVisited((prev) => {
+      const next = new Set(prev);
+      next.add(index);
+      next.add((index + 1) % count); // preload the upcoming slide
+      return next;
+    });
+  }, [index, count]);
+
+  // Autoplay: skipped for a single banner or reduced-motion users, and paused
+  // while the tab is hidden (no wasted renders in background tabs).
+  useEffect(() => {
+    if (count < 2) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    let timer;
+    const start = () => {
+      timer = setInterval(() => setIndex((i) => (i + 1) % count), AUTOPLAY_MS);
+    };
+    const stop = () => clearInterval(timer);
+    const onVisibility = () => {
+      stop();
+      if (!document.hidden) start();
+    };
+
+    start();
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      stop();
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [count]);
+
+  if (!count) return null;
 
   return (
     <section className="relative w-full overflow-hidden" style={{ background: PAPER }}>
@@ -40,19 +77,24 @@ export default function BannerCarousel({ banners }) {
             tabIndex={i === index ? 0 : -1}
             aria-hidden={i !== index}
           >
-            <img
-              src={b.image}
-              alt={b.title || 'Banner'}
-              className="absolute inset-0 w-full h-full object-contain object-center sm:object-cover"
-            />
+            {visited.has(i) && (
+              <R2Image
+                src={b.image}
+                alt={b.title || 'Banner'}
+                sizes="100vw"
+                // The first banner is the page's main image: load it first, at high priority
+                priority={i === 0}
+                className="absolute inset-0 w-full h-full object-contain object-center sm:object-cover"
+              />
+            )}
           </Link>
         ))}
 
-        {banners.length > 1 && (
+        {count > 1 && (
           <>
             {/* Arrows — white with a thin gold outline so they read on any banner image */}
             <button
-              onClick={() => setIndex((i) => (i - 1 + banners.length) % banners.length)}
+              onClick={() => setIndex((i) => (i - 1 + count) % count)}
               className="absolute left-2 sm:left-5 top-1/2 -translate-y-1/2 p-1 sm:p-2 rounded-full transition z-10"
               style={{ background: PAPER, color: INK, border: `1px solid ${GOLD}` }}
               aria-label="Previous"
@@ -60,7 +102,7 @@ export default function BannerCarousel({ banners }) {
               <ChevronLeft size={14} strokeWidth={1.5} />
             </button>
             <button
-              onClick={() => setIndex((i) => (i + 1) % banners.length)}
+              onClick={() => setIndex((i) => (i + 1) % count)}
               className="absolute right-2 sm:right-5 top-1/2 -translate-y-1/2 p-1 sm:p-2 rounded-full transition z-10"
               style={{ background: PAPER, color: INK, border: `1px solid ${GOLD}` }}
               aria-label="Next"

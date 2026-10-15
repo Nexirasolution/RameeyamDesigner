@@ -1,9 +1,16 @@
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rameeyam.com').replace(/\/$/, '');
+
 export default function robots() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mohithtrends.com';
   return {
     rules: [
-      { userAgent: '*', allow: '/', disallow: ['/admin', '/api'] }
+      {
+        userAgent: '*',
+        allow: '/',
+        // Private or useless-for-search paths. Adjust to match your real routes.
+        // (Don't block /_next/ — Google needs your JS and CSS to render pages.)
+        disallow: ['/api/', '/admin', '/cart', '/checkout'],
+      },
     ],
-    sitemap: `${siteUrl}/sitemap.xml`
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Heart } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
 import { getVariantTotalStock } from '@/lib/stock';
 import { useWishlist } from '@/components/WhishlistContext'; // adjust path as needed
+import R2Image from '@/components/R2Image';
 
 const INK = '#000000';
 const INK_SOFT = '#6B6B6B';
@@ -14,7 +14,8 @@ const GOLD_WASH = '#F6EFD9';
 const PAPER = '#FFFFFF';
 const FONT_SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
-export default function ProductCard({ product }) {
+// `priority` should be true only for the first row of cards above the fold
+export default function ProductCard({ product, priority = false }) {
   const { isWishlisted, toggleWishlist } = useWishlist();
 
   const variant = product.variants?.[0];
@@ -43,12 +44,13 @@ export default function ProductCard({ product }) {
       <div className="relative">
         <Link href={href} className="block" aria-label={product.name}>
           <div className="relative aspect-[3/4] overflow-hidden" style={{ background: GOLD_WASH }}>
-            <Image
+            <R2Image
               src={image}
               alt={product.name}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className={`object-cover ${outOfStock ? 'grayscale opacity-70' : ''}`}
+              // Grid is 2 columns on mobile, 3 on tablet, 4 on desktop
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              priority={priority}
+              className={`absolute inset-0 w-full h-full object-cover ${outOfStock ? 'grayscale opacity-70' : ''}`}
             />
           </div>
         </Link>
