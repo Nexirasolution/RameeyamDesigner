@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Tag, Truck } from 'lucide-react';
 
-// Same tokens as Navbar — keep these two in sync if you tweak the palette.
-// Black announcement bar with gold text.
-const BAR = '#000000';
+// Deep dark-green announcement bar with gold text.
+// GOLD matches the accent used in Navbar — keep it in sync if you tweak the palette.
+const BAR = '#004225';
 const GOLD = '#C9A227';
 const GOLD_FAINT = 'rgba(201, 162, 39, 0.7)';
 

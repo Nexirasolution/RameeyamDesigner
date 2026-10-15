@@ -8,11 +8,11 @@ const display = Fraunces({ subsets: ['latin'], weight: ['400'], variable: '--fon
 const body = Inter({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-body' });
 
 // Black / white / gold palette — white footer with a gold top rule and black text.
-const PAPER = '#FFFFFF';
+const PAPER = '#004225';
 const GOLD = '#C9A227';
-const INK = '#000000';
-const INK_SOFT = 'rgba(0,0,0,0.65)';
-const LINE = 'rgba(0,0,0,0.12)';
+const INK = '#C9A227';
+const INK_SOFT = '#C9A227';
+const LINE = '#C9A227';
 
 async function getCategories() {
   await dbConnect();

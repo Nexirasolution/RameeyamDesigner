@@ -8,7 +8,7 @@ import { formatINR } from '@/lib/utils';
 
 // White, black and gold palette (matches the invoice page)
 const PAPER = '#FFFFFF';
-const BLACK = '#000000';
+const BLACK = '#004225';
 const GREY = '#5E5E5E';        // secondary text on white
 const LINE = '#E7E2D6';        // hairlines
 const GOLD = '#C9A24B';        // rules and accents

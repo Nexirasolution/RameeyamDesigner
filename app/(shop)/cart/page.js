@@ -7,7 +7,7 @@ import { formatINR } from '@/lib/utils';
 import { Trash2, ShoppingBag } from 'lucide-react';
 
 // White / black / gold theme
-const INK = '#0A0A0A';
+const INK = '#004225';
 const INK_SOFT = '#5A5A5A';
 const GOLD = '#C9A227';
 const GOLD_DEEP = '#A8861A'; // darker gold for text on white (better readability)

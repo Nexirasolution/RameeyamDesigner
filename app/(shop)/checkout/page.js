@@ -8,7 +8,7 @@ import { useCart, cartKey } from '@/components/CartContext';
 import { formatINR } from '@/lib/utils';
 
 // White / black / gold theme
-const INK = '#0A0A0A';
+const INK = '#004225';
 const INK_SOFT = '#5A5A5A';
 const GOLD = '#C9A227';
 const GOLD_DEEP = '#A8861A'; // darker gold for text on white (readable)
@@ -440,7 +440,7 @@ export default function CheckoutPage() {
             onClick={placeOrder}
             disabled={placeOrderDisabled}
             className="w-full mt-6 py-3.5 text-sm font-medium rounded-[4px] border transition-colors
-                       bg-[#0A0A0A] text-white border-[#0A0A0A]
+                       bg-[#004225] text-white border-[#0A0A0A]
                        hover:bg-[#C9A227] hover:border-[#C9A227] hover:text-[#0A0A0A]
                        disabled:bg-[#D9D9D9] disabled:border-[#D9D9D9] disabled:text-[#7A7A7A] disabled:cursor-not-allowed
                        focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9A227]"

@@ -6,7 +6,7 @@ import { Heart } from 'lucide-react';
 import { useWishlist } from '@/components/WhishlistContext';
 import ProductCard from '@/components/ProductCard';
 
-const INK = '#000000';
+const INK = '#004225';
 const INK_SOFT = '#6B6B6B';
 const GOLD = '#C9A227';
 const GOLD_WASH = '#F6EFD9';

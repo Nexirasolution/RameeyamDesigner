@@ -22,7 +22,7 @@ const body = Inter({ subsets: ['latin'], weight: ['400', '500', '600'], variable
 // actions, gold is the single accent, and one hairline tone separates
 // sections. No pills or drop shadows.
 const PAPER = '#FFFFFF';
-const BLACK = '#000000';
+const BLACK = '#004225';
 const GREY = '#5E5E5E';          // secondary text on white
 const NEUTRAL = '#8A8A8A';       // struck-through prices, verified label
 const LINE = '#E7E2D6';          // hairlines

@@ -253,7 +253,7 @@ export default function Navbar() {
 
             {/* Center: logo (scales down on small screens) */}
             <Link href="/" className="flex items-center justify-self-center">
-              <div className="relative w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24">
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36">
                 <Image src="/logo.png" alt="Tirupur Clothing Hub" fill className="object-contain" priority />
               </div>
             </Link>
@@ -337,7 +337,7 @@ export default function Navbar() {
             className="flex items-center justify-between px-6 py-3"
             style={{ borderBottom: `1px solid ${LINE}` }}
           >
-            <div className="relative w-12 h-12">
+            <div className="relative w-16 h-16">
               <Image src="/logo.png" alt="Tirupur Clothing Hub" fill className="object-contain" />
             </div>
             <button

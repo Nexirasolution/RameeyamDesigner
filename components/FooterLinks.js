@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { Instagram, ChevronDown } from 'lucide-react';
 
 const GOLD = '#C9A227';
-const INK = '#000000';
-const INK_SOFT = 'rgba(0,0,0,0.65)';
-const LINE = 'rgba(0,0,0,0.12)';
+const INK = '#C9A227';
+const INK_SOFT = '#C9A227';
+const LINE = '#C9A227';
 
 // Actual WhatsApp glyph (brand mark) — lucide's MessageCircle is a generic
 // chat bubble, not the real logo, so this is an inline SVG instead.
